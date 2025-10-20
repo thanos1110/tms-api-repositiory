@@ -8,7 +8,7 @@
   to = "/.netlify/functions/get"
   status = 200
 
-# Single license using wildcard path
+# Redirect all /get/* to one function handler
 [[redirects]]
   from = "/get/*"
   to = "/.netlify/functions/get"
