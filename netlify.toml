@@ -2,14 +2,16 @@
   functions = "netlify/functions"
   publish = "."
 
-# Return all records
 [[redirects]]
   from = "/getall"
   to = "/.netlify/functions/get"
   status = 200
 
-# Redirect all /get/* to one function handler
 [[redirects]]
   from = "/get/*"
-  to = "/.netlify/functions/get"
+  to = "/.netlify/functions/get/:splat"
   status = 200
+  force = true
+
+[functions]
+  included_files = ["data.json"]
