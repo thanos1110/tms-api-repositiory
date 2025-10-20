@@ -1,25 +1,13 @@
-import fs from "fs";
-import path from "path";
-
 export async function handler(event, context) {
   try {
     const filePath = path.join(process.cwd(), "data.json");
-    const jsonData = fs.readFileSync(filePath, "utf8");
-    const data = JSON.parse(jsonData);
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
-    const licenseKey = event.queryStringParameters.license;
+    // Extract last segment from path
+    const licenseKey = event.path.split("/").pop();
 
-    // If license provided, filter results
-    if (licenseKey) {
-      const filtered = data.filter(item => item.LicenseKey === licenseKey);
-      if (filtered.length === 0) {
-        return {
-          statusCode: 404,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "License key not found" }),
-        };
-      }
-
+    const filtered = data.filter(item => item.LicenseKey === licenseKey);
+    if (filtered.length > 0) {
       return {
         statusCode: 200,
         headers: { "Content-Type": "application/json" },
@@ -27,18 +15,12 @@ export async function handler(event, context) {
       };
     }
 
-    // No license param → return all
     return {
-      statusCode: 200,
+      statusCode: 404,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ message: "License key not found" }),
     };
-
   } catch (error) {
-    return {
-      statusCode: 500,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: error.message }),
-    };
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 }
